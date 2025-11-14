@@ -244,7 +244,13 @@ export class EasyShopper implements INodeType {
 						const credentials = await this.getCredentials('easyShopperApi');
 						const storeGuid = credentials.storeGuid as string;
 
-						const responseData = await easyShopperApiRequest.call(this, 'DELETE', `/mobile-backend/api/v5/shoppingList/${storeGuid}/${itemGuid}`);
+						// To remove an item, we use addOrUpdate with amount: 0 and include the shoppingListItemGuid
+						const body = {
+							shoppingListItemGuid: itemGuid,
+							amount: 0,
+						};
+
+						const responseData = await easyShopperApiRequest.call(this, 'POST', `/mobile-backend/api/v5/shoppingList/addOrUpdate/${storeGuid}`, body);
 						returnData.push({
 							json: {
 								success: true,
@@ -259,12 +265,25 @@ export class EasyShopper implements INodeType {
 						const credentials = await this.getCredentials('easyShopperApi');
 						const storeGuid = credentials.storeGuid as string;
 
-						const responseData = await easyShopperApiRequest.call(this, 'DELETE', `/mobile-backend/api/v5/shoppingList/${storeGuid}`);
+						// First get all items
+						const listData = await easyShopperApiRequest.call(this, 'GET', '/mobile-backend/api/v5/shoppingList/get/');
+						const items = listData || [];
+
+						// Delete each item by setting amount to 0
+						const deletePromises = items.map((item: any) => 
+							easyShopperApiRequest.call(this, 'POST', `/mobile-backend/api/v5/shoppingList/addOrUpdate/${storeGuid}`, {
+								shoppingListItemGuid: item.shoppingListItemGuid,
+								amount: 0,
+							})
+						);
+
+						await Promise.all(deletePromises);
+
 						returnData.push({
 							json: {
 								success: true,
 								cleared: true,
-								response: responseData,
+								itemsDeleted: items.length,
 							},
 						});
 					}
