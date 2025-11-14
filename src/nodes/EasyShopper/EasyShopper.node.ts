@@ -227,12 +227,8 @@ export class EasyShopper implements INodeType {
 							},
 						});
 
-					} else if (operation === 'getItems') {
-						// Get credentials for storeGuid
-						const credentials = await this.getCredentials('easyShopperApi');
-						const storeGuid = credentials.storeGuid as string;
-
-						const responseData = await easyShopperApiRequest.call(this, 'GET', `/mobile-backend/api/v5/shoppingList/${storeGuid}`);
+				} else if (operation === 'getItems') {
+					const responseData = await easyShopperApiRequest.call(this, 'GET', '/mobile-backend/api/v5/shoppingList/get/');
 						returnData.push({
 							json: {
 								success: true,
