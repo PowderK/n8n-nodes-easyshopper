@@ -36,6 +36,9 @@ export async function easyShopperApiRequest(
 					'Authorization': `Basic ${Buffer.from(credentials.apiCredentials as string).toString('base64')}`,
 					'Content-Type': 'application/json',
 					'Accept': 'application/json',
+					'x-subscription-key': '4a8bbd6458444086b7f51ca8b5a89ca9',
+					'User-Agent': 'Whiz-Cart/4.143.0-144352; (ios 15.8.5)',
+					'Accept-Language': 'de-DE,de;q=0.9',
 				},
 				method: 'POST',
 				body: {
@@ -66,6 +69,9 @@ export async function easyShopperApiRequest(
 		headers: {
 			'Content-Type': 'application/json',
 			'Accept': 'application/json',
+			'x-subscription-key': '4a8bbd6458444086b7f51ca8b5a89ca9',
+			'User-Agent': 'Whiz-Cart/4.143.0-144352; (ios 15.8.5)',
+			'Accept-Language': 'de-DE,de;q=0.9',
 		},
 		method,
 		body,
