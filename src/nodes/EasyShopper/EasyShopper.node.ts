@@ -6,7 +6,7 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 
-import { easyShopperApiRequest, easyShopperApiRequestAllItems } from './GenericFunctions';
+import { easyShopperApiRequest, easyShopperApiRequestAllItems, getStoreGuid } from './GenericFunctions';
 
 export class EasyShopper implements INodeType {
 	description: INodeTypeDescription = {
@@ -198,9 +198,8 @@ export class EasyShopper implements INodeType {
 							finalCategory = EasyShopper.detectCategory(productName);
 						}
 
-						// Get credentials for storeGuid
-						const credentials = await this.getCredentials('easyShopperApi');
-						const storeGuid = credentials.storeGuid as string;
+						// Get Store GUID from login
+						const storeGuid = await getStoreGuid.call(this);
 
 						const body = {
 							amount: quantity,
@@ -240,9 +239,8 @@ export class EasyShopper implements INodeType {
 
 					} else if (operation === 'removeItem') {
 						const itemGuid = this.getNodeParameter('itemGuid', i) as string;
-						// Get credentials for storeGuid
-						const credentials = await this.getCredentials('easyShopperApi');
-						const storeGuid = credentials.storeGuid as string;
+						// Get Store GUID from login
+						const storeGuid = await getStoreGuid.call(this);
 
 						// To remove an item, we use addOrUpdate with amount: 0 and include the shoppingListItemGuid
 						const body = {
@@ -261,9 +259,8 @@ export class EasyShopper implements INodeType {
 						});
 
 					} else if (operation === 'clearList') {
-						// Get credentials for storeGuid
-						const credentials = await this.getCredentials('easyShopperApi');
-						const storeGuid = credentials.storeGuid as string;
+						// Get Store GUID from login
+						const storeGuid = await getStoreGuid.call(this);
 
 						// First get all items
 						const listData = await easyShopperApiRequest.call(this, 'GET', '/mobile-backend/api/v5/shoppingList/get/');

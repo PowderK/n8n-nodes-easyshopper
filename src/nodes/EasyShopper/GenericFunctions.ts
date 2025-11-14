@@ -26,6 +26,7 @@ export async function easyShopperApiRequest(
 
 	// First, try to get existing token or login to get new one
 	let authToken: string | undefined;
+	let storeGuid: string | undefined;
 
 	// If this is not a login request, we need to authenticate first
 	if (!endpoint.includes('/login')) {
@@ -54,6 +55,7 @@ export async function easyShopperApiRequest(
 			const loginResponse = await this.helpers.request(loginOptions);
 			if (loginResponse && loginResponse.authenticationToken) {
 				authToken = loginResponse.authenticationToken;
+				storeGuid = loginResponse.storeGuid;
 			} else {
 				throw new NodeApiError(this.getNode(), {
 					message: 'Authentication failed - no token received',
@@ -152,4 +154,55 @@ export async function easyShopperApiRequestAllItems(
 	} while (responseData.nextPageToken);
 
 	return returnData;
+}
+
+/**
+ * Get Store GUID by logging in
+ */
+export async function getStoreGuid(
+	this: IExecuteFunctions | ILoadOptionsFunctions,
+): Promise<string> {
+	const credentials = await this.getCredentials('easyShopperApi');
+
+	if (credentials === undefined) {
+		throw new NodeApiError(this.getNode(), {
+			message: 'No credentials got returned!',
+		});
+	}
+
+	try {
+		const clientId = 'f1f98e3c-b86d-47f7-ada5-83dd0250c2b6';
+		const authString = `${clientId}:${credentials.deviceId}`;
+		const loginOptions: IRequestOptions = {
+			headers: {
+				'Authorization': `Basic ${Buffer.from(authString).toString('base64')}`,
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+				'x-subscription-key': '4a8bbd6458444086b7f51ca8b5a89ca9',
+				'User-Agent': 'Whiz-Cart/4.143.0-144352; (ios 15.8.5)',
+				'Accept-Language': 'de-DE,de;q=0.9',
+			},
+			method: 'POST',
+			body: {
+				uniqueDeviceId: credentials.deviceId,
+			},
+			uri: `${credentials.baseUrl}/mobile-backend/api/v4/login`,
+			json: true,
+		};
+
+		const loginResponse = await this.helpers.request(loginOptions);
+		if (loginResponse && loginResponse.storeGuid) {
+			return loginResponse.storeGuid;
+		} else {
+			throw new NodeApiError(this.getNode(), {
+				message: 'Could not get store GUID from login response',
+				response: loginResponse,
+			});
+		}
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+		throw new NodeApiError(this.getNode(), {
+			message: `Failed to get store GUID: ${errorMessage}`,
+		});
+	}
 }
