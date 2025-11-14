@@ -28,25 +28,33 @@ Eine n8n Community Node für die Integration mit der EasyShopper API zum Verwalt
 
 ## Konfiguration
 
-### 1. Credentials einrichten
+### 1. Device ID aus der App auslesen
+
+1. Öffne die **EasyShopper App** auf deinem Smartphone
+2. Gehe zum **Start-Bildschirm** der App
+3. Dort findest du einen **QR-Code/Barcode**
+4. Scanne den Code mit einem QR-Code-Reader oder mache einen Screenshot
+
+**QR-Code Format:**
+```
+w4c;xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;;;de;;;0
+```
+
+**Benötigte Daten:**
+- Der **zweite Wert** nach dem ersten Semikolon ist deine **Device ID**
+- Im obigen Beispiel: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`
+- Format: UUID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+
+### 2. Credentials in n8n einrichten
 
 1. Gehe zu **Credentials** in n8n
 2. Klicke **Create New**
 3. Wähle **EasyShopper API**
 4. Fülle die folgenden Felder aus:
-   - **Device ID**: Deine EasyShopper Device ID (UUID-Format)
-   - **API Credentials**: Deine API-Credentials im Format `clientId:deviceId`
+   - **Device ID**: Die UUID aus dem QR-Code (zweiter Wert)
    - **Base URL**: `https://api.es-prod.whiz-cart.com` (Standard)
 
-### 2. Credentials aus bestehender Installation extrahieren
-
-2. Credentials aus deiner EasyShopper-Installation:
-
-```bash
-# Extrahiere deine persönlichen Credentials aus der App
-# Diese findest du in den Netzwerk-Requests der EasyShopper App
-# Oder nutze ein Tool wie mitmproxy/Charles Proxy
-```
+✅ Fertig! Der Store GUID wird automatisch beim Login abgerufen.
 
 ## Verwendung
 
@@ -158,8 +166,8 @@ Slack: Send Confirmation
 ### Häufige Probleme
 
 1. **Authentication failed**
-   - Überprüfe Device ID und API Credentials
-   - Stelle sicher, dass das Format `clientId:deviceId` korrekt ist
+   - Überprüfe Device ID
+   - Stelle sicher, dass die UUID aus dem QR-Code korrekt übernommen wurde
 
 2. **Invalid Device ID**
    - Device ID muss im UUID-Format vorliegen

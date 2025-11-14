@@ -6,7 +6,47 @@
 
 Dieser Guide zeigt, wie du deine eigenen EasyShopper API-Credentials erhältst.
 
-## Methode 1: Mit mitmproxy (Empfohlen)
+## Methode 1: QR-Code aus der App (Einfachste Methode)
+
+### 1. Device ID auslesen
+
+1. **Öffne die EasyShopper App** auf deinem Smartphone
+2. Gehe zum **Start-Bildschirm** (Startseite der App)
+3. Dort findest du einen **QR-Code** oder **Barcode**
+4. **Scanne den Code** mit einem QR-Code-Reader oder mache einen **Screenshot**
+
+### 2. QR-Code Format verstehen
+
+Der QR-Code enthält folgende Daten:
+```
+w4c;xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx;;;de;;;0
+```
+
+**Aufbau:**
+- `w4c` - App-Identifier (nicht benötigt)
+- `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` - **DEVICE ID** ← Das brauchst du!
+- Weitere Werte (Sprache, etc.) - nicht benötigt
+
+### 3. Device ID extrahieren
+
+**Der zweite Wert nach dem ersten Semikolon ist deine Device ID:**
+- Format: UUID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+- Im Beispiel oben: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`
+
+### 4. In n8n konfigurieren
+
+1. Gehe zu **Credentials** in n8n
+2. Wähle **EasyShopper API**
+3. Trage ein:
+   - **Device ID**: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` (deine UUID aus dem QR-Code)
+   - **Base URL**: `https://api.es-prod.whiz-cart.com`
+4. **Test Connection** klicken
+
+✅ **Fertig!** Der Store GUID wird automatisch beim Login geholt.
+
+---
+
+## Methode 2: Mit mitmproxy (Erweiterte Methode)
 
 ### 1. mitmproxy installieren
 ```bash
@@ -90,27 +130,28 @@ echo "BASE64_STRING" | base64 -d
 2. In Charles nach `login` Request filtern
 3. Authorization Header und Device ID extrahieren
 
-## Methode 3: Aus bestehendem Python Script
+## Methode 4: Aus bestehendem Python Script
 
 Falls du bereits das Python-Script verwendest:
 
 ```bash
 cd /path/to/EasyShopper
-cat easy_shopper_script.py | grep -E "device_id|api_credentials"
+cat easy_shopper_script.py | grep -E "device_id"
+# Suche nach der DEVICE_ID Variable
 ```
 
 ## Credentials in n8n konfigurieren
 
-Nachdem du deine Credentials extrahiert hast:
+Nachdem du deine Device ID extrahiert hast:
 
-1. **Device ID**: Die UUID aus dem Request Body
+1. **Device ID**: Die UUID aus dem QR-Code oder Request Body
    - Format: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`
+   - Beispiel: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`
 
-2. **API Credentials**: Dekodierte Base64 aus Authorization Header
-   - Format: `clientId:deviceId`
-
-3. **Base URL**: (Standard)
+2. **Base URL**: (Standard)
    - `https://api.es-prod.whiz-cart.com`
+
+💡 **Hinweis:** Die Client-ID ist app-weit gleich und bereits fest codiert. Du brauchst nur deine Device ID einzugeben!
 
 ## Sicherheitshinweise
 
