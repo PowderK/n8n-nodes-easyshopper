@@ -29,20 +29,14 @@ export async function easyShopperApiRequest(
 
 	// If this is not a login request, we need to authenticate first
 	if (!endpoint.includes('/login')) {
-			try {
-				// Try to login and get token
-				// Client ID is app-wide constant, Device ID is user-specific
-				const clientId = 'f1f98e3c-b86d-47f7-ada5-83dd0250c2b6';
-				const authString = `${clientId}:${credentials.deviceId}`;
-				const loginOptions: IRequestOptions = {
-					headers: {
-						'Authorization': `Basic ${Buffer.from(authString).toString('base64')}`,
-						'Content-Type': 'application/json',
-						'Accept': 'application/json',
-						'x-subscription-key': '4a8bbd6458444086b7f51ca8b5a89ca9',
-						'User-Agent': 'Whiz-Cart/4.143.0-144352; (ios 15.8.5)',
-						'Accept-Language': 'de-DE,de;q=0.9',
-					},
+		try {
+			// Try to login and get token
+			const loginOptions: IRequestOptions = {
+				headers: {
+					'Authorization': `Basic ${Buffer.from(credentials.apiCredentials as string).toString('base64')}`,
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+				},
 				method: 'POST',
 				body: {
 					uniqueDeviceId: credentials.deviceId,
@@ -72,9 +66,6 @@ export async function easyShopperApiRequest(
 		headers: {
 			'Content-Type': 'application/json',
 			'Accept': 'application/json',
-			'x-subscription-key': '4a8bbd6458444086b7f51ca8b5a89ca9',
-			'User-Agent': 'Whiz-Cart/4.143.0-144352; (ios 15.8.5)',
-			'Accept-Language': 'de-DE,de;q=0.9',
 		},
 		method,
 		body,
@@ -85,10 +76,8 @@ export async function easyShopperApiRequest(
 
 	// Add authentication header based on endpoint
 	if (endpoint.includes('/login')) {
-		// For login, use Basic auth with app-wide Client ID
-		const clientId = 'f1f98e3c-b86d-47f7-ada5-83dd0250c2b6';
-		const authString = `${clientId}:${credentials.deviceId}`;
-		options.headers!['Authorization'] = `Basic ${Buffer.from(authString).toString('base64')}`;
+		// For login, use Basic auth
+		options.headers!['Authorization'] = `Basic ${Buffer.from(credentials.apiCredentials as string).toString('base64')}`;
 	} else {
 		// For other endpoints, use Bearer token
 		if (authToken) {

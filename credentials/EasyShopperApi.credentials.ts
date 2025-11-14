@@ -15,15 +15,18 @@ export class EasyShopperApi implements ICredentialType {
 			name: 'deviceId',
 			type: 'string',
 			default: '',
-			description: 'Your EasyShopper device ID (UUID format) - can be read from QR code in the app',
+			description: 'Your EasyShopper device ID (UUID format)',
 			required: true,
 		},
 		{
-			displayName: 'Store GUID',
-			name: 'storeGuid',
+			displayName: 'API Credentials',
+			name: 'apiCredentials',
 			type: 'string',
+			typeOptions: {
+				password: true,
+			},
 			default: '',
-			description: 'Your store GUID (available after login)',
+			description: 'Your EasyShopper API credentials (format: clientId:deviceId)',
 			required: true,
 		},
 		{
@@ -43,15 +46,8 @@ export class EasyShopperApi implements ICredentialType {
 			url: '/mobile-backend/api/v4/login',
 			method: 'POST',
 			headers: {
+				'Authorization': '=Basic {{Buffer.from($credentials.apiCredentials).toString("base64")}}',
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				'x-subscription-key': '4a8bbd6458444086b7f51ca8b5a89ca9',
-				'Accept-Language': 'de-DE,de;q=0.9',
-				'User-Agent': 'Whiz-Cart/4.143.0-144352; (ios 15.8.5)',
-			},
-			auth: {
-				username: 'f1f98e3c-b86d-47f7-ada5-83dd0250c2b6',
-				password: '={{$credentials.deviceId}}',
 			},
 			body: {
 				uniqueDeviceId: '={{$credentials.deviceId}}',
