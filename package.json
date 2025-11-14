@@ -11,14 +11,14 @@
     "einkaufsliste"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/benni/n8n-nodes-easyshopper",
+  "homepage": "https://github.com/PowderK/n8n-nodes-easyshopper#readme",
   "author": {
     "name": "EasyShopper Integration",
     "email": ""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/benni/n8n-nodes-easyshopper.git"
+    "url": "git+https://github.com/PowderK/n8n-nodes-easyshopper.git"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

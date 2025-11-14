@@ -190,7 +190,7 @@ N8N_LOG_LEVEL=debug n8n start
 
 ```bash
 # Repository klonen
-git clone <repository>
+git clone https://github.com/PowderK/n8n-nodes-easyshopper.git
 cd n8n-nodes-easyshopper
 
 # Dependencies installieren
@@ -228,8 +228,8 @@ npm run build
 
 Für Fragen und Support:
 
-1. Überprüfe die [Dokumentation](README.md)
-2. Schaue in die [Issues](../../issues)
+1. Überprüfe die [Dokumentation](https://github.com/PowderK/n8n-nodes-easyshopper#readme)
+2. Schaue in die [Issues](https://github.com/PowderK/n8n-nodes-easyshopper/issues)
 3. Erstelle ein neues Issue mit detaillierter Beschreibung
 
 ## Lizenz
