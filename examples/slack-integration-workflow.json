@@ -1,0 +1,152 @@
+{
+  "name": "Slack to EasyShopper Integration",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "easyshopper",
+        "options": {}
+      },
+      "id": "webhook-node",
+      "name": "Slack Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "easyshopper-slack"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.command }}",
+              "operation": "equal",
+              "value2": "/einkauf"
+            }
+          ]
+        }
+      },
+      "id": "check-command",
+      "name": "Check Slash Command",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract product name from Slack command\nconst text = $input.first().json.body.text || '';\nconst productName = text.trim();\n\nif (!productName) {\n  return [{\n    json: {\n      error: 'Bitte gib einen Produktnamen an: /einkauf Milch'\n    }\n  }];\n}\n\n// Extract quantity if specified (e.g., \"2x Milch\" or \"Milch x2\")\nlet quantity = 1;\nlet cleanProductName = productName;\n\nconst quantityMatch = productName.match(/(\\d+)x?\\s*(.+)|(.+)\\s*x(\\d+)/i);\nif (quantityMatch) {\n  if (quantityMatch[1]) {\n    quantity = parseInt(quantityMatch[1]);\n    cleanProductName = quantityMatch[2].trim();\n  } else if (quantityMatch[4]) {\n    quantity = parseInt(quantityMatch[4]);\n    cleanProductName = quantityMatch[3].trim();\n  }\n}\n\nreturn [{\n  json: {\n    productName: cleanProductName,\n    quantity: quantity,\n    userId: $input.first().json.body.user_id,\n    userName: $input.first().json.body.user_name,\n    responseUrl: $input.first().json.body.response_url\n  }\n}];"
+      },
+      "id": "process-command",
+      "name": "Process Command",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [680, 240]
+    },
+    {
+      "parameters": {
+        "resource": "shoppingList",
+        "operation": "addItem",
+        "productName": "={{ $json.productName }}",
+        "quantity": "={{ $json.quantity }}",
+        "category": "auto"
+      },
+      "id": "add-to-easyshopper",
+      "name": "Add to EasyShopper",
+      "type": "n8n-nodes-easyshopper.easyShopper",
+      "typeVersion": 1,
+      "position": [900, 240],
+      "credentials": {
+        "easyShopperApi": {
+          "id": "1",
+          "name": "EasyShopper API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"response_type\": \"ephemeral\",\n  \"text\": \"✅ Produkt hinzugefügt!\",\n  \"attachments\": [\n    {\n      \"color\": \"good\",\n      \"fields\": [\n        {\n          \"title\": \"Produkt\",\n          \"value\": \"{{ $node['Process Command'].json.productName }}\",\n          \"short\": true\n        },\n        {\n          \"title\": \"Menge\",\n          \"value\": \"{{ $node['Process Command'].json.quantity }}\",\n          \"short\": true\n        },\n        {\n          \"title\": \"Kategorie\",\n          \"value\": \"{{ $json.category }}\",\n          \"short\": true\n        },\n        {\n          \"title\": \"Item ID\",\n          \"value\": \"{{ $json.itemGuid }}\",\n          \"short\": true\n        }\n      ]\n    }\n  ]\n}",
+        "url": "={{ $node['Process Command'].json.responseUrl }}",
+        "options": {}
+      },
+      "id": "slack-response-success",
+      "name": "Slack Response (Success)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 160]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"response_type\": \"ephemeral\",\n  \"text\": \"❌ Fehler beim Hinzufügen\",\n  \"attachments\": [\n    {\n      \"color\": \"danger\",\n      \"text\": \"Verwendung: `/einkauf Produktname` oder `/einkauf 2x Milch`\"\n    }\n  ]\n}",
+        "url": "={{ $node['Process Command'].json.responseUrl }}",
+        "options": {}
+      },
+      "id": "slack-response-error",
+      "name": "Slack Response (Error)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [900, 360]
+    }
+  ],
+  "connections": {
+    "Slack Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check Slash Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Slash Command": {
+      "main": [
+        [
+          {
+            "node": "Process Command",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Slack Response (Error)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Command": {
+      "main": [
+        [
+          {
+            "node": "Add to EasyShopper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to EasyShopper": {
+      "main": [
+        [
+          {
+            "node": "Slack Response (Success)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "87654321-09ba-fedc-8765-4321098765ba"
+}

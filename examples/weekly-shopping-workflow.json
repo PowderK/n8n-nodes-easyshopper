@@ -1,0 +1,140 @@
+{
+  "name": "Weekly Shopping List",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Weekly Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "resource": "shoppingList",
+        "operation": "clearList"
+      },
+      "id": "b2c3d4e5-f6g7-8901-bcde-f23456789012",
+      "name": "Clear Shopping List",
+      "type": "n8n-nodes-easyshopper.easyShopper",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "easyShopperApi": {
+          "id": "1",
+          "name": "EasyShopper API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "items",
+              "value": "Milch,Brot,Eier,Butter,Bananen,Äpfel,Käse"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c3d4e5f6-g7h8-9012-cdef-345678901234",
+      "name": "Weekly Items",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {
+          "destinationFieldName": "item",
+          "splitOutItems": true
+        }
+      },
+      "id": "d4e5f6g7-h8i9-0123-def4-56789012345a",
+      "name": "Split Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "resource": "shoppingList",
+        "operation": "addItem",
+        "productName": "={{ $json.item }}",
+        "quantity": 1,
+        "category": "auto"
+      },
+      "id": "e5f6g7h8-i9j0-1234-ef56-789012345abc",
+      "name": "Add Items to List",
+      "type": "n8n-nodes-easyshopper.easyShopper",
+      "typeVersion": 1,
+      "position": [1120, 300],
+      "credentials": {
+        "easyShopperApi": {
+          "id": "1",
+          "name": "EasyShopper API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Weekly Trigger": {
+      "main": [
+        [
+          {
+            "node": "Clear Shopping List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear Shopping List": {
+      "main": [
+        [
+          {
+            "node": "Weekly Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly Items": {
+      "main": [
+        [
+          {
+            "node": "Split Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Items": {
+      "main": [
+        [
+          {
+            "node": "Add Items to List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "12345678-90ab-cdef-1234-567890abcdef"
+}

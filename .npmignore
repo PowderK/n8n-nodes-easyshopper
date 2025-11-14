@@ -1,0 +1,43 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Development
+node_modules/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build artifacts
+tsconfig.json
+.eslintrc*
+.prettierrc*
+*.map
+
+# Git
+.git/
+.gitignore
+
+# Test & CI
+test/
+tests/
+*.spec.ts
+*.test.ts
+coverage/
+.nyc_output/
+
+# Examples & Setup
+examples/
+INSTALLATION.md
+setup.sh
+build.sh
+gulpfile.js
+
+# Misc
+.DS_Store
+*.log
+npm-debug.log*
+.env
+.env.*
