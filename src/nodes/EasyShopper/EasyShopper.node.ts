@@ -198,13 +198,24 @@ export class EasyShopper implements INodeType {
 							finalCategory = EasyShopper.detectCategory(productName);
 						}
 
+						// Get credentials for storeGuid
+						const credentials = await this.getCredentials('easyShopperApi');
+						const storeGuid = credentials.storeGuid as string;
+
 						const body = {
-							productName,
-							quantity,
-							category: finalCategory,
+							amount: quantity,
+							cgIcon: finalCategory,
+							cgLocalKey: finalCategory,
+							product: {
+								cgIcon: finalCategory,
+								cgLocalKey: finalCategory,
+								name: productName,
+							},
+							tag: productName,
+							groupName: finalCategory,
 						};
 
-						const responseData = await easyShopperApiRequest.call(this, 'POST', '/mobile-backend/api/v5/shoppinglist/addItem', body);
+						const responseData = await easyShopperApiRequest.call(this, 'POST', `/mobile-backend/api/v5/shoppingList/addOrUpdate/${storeGuid}`, body);
 						returnData.push({
 							json: {
 								success: true,
@@ -217,7 +228,11 @@ export class EasyShopper implements INodeType {
 						});
 
 					} else if (operation === 'getItems') {
-						const responseData = await easyShopperApiRequest.call(this, 'GET', '/mobile-backend/api/v5/shoppinglist');
+						// Get credentials for storeGuid
+						const credentials = await this.getCredentials('easyShopperApi');
+						const storeGuid = credentials.storeGuid as string;
+
+						const responseData = await easyShopperApiRequest.call(this, 'GET', `/mobile-backend/api/v5/shoppingList/${storeGuid}`);
 						returnData.push({
 							json: {
 								success: true,
@@ -229,7 +244,11 @@ export class EasyShopper implements INodeType {
 
 					} else if (operation === 'removeItem') {
 						const itemGuid = this.getNodeParameter('itemGuid', i) as string;
-						const responseData = await easyShopperApiRequest.call(this, 'DELETE', `/mobile-backend/api/v5/shoppinglist/${itemGuid}`);
+						// Get credentials for storeGuid
+						const credentials = await this.getCredentials('easyShopperApi');
+						const storeGuid = credentials.storeGuid as string;
+
+						const responseData = await easyShopperApiRequest.call(this, 'DELETE', `/mobile-backend/api/v5/shoppingList/${storeGuid}/${itemGuid}`);
 						returnData.push({
 							json: {
 								success: true,
@@ -240,7 +259,11 @@ export class EasyShopper implements INodeType {
 						});
 
 					} else if (operation === 'clearList') {
-						const responseData = await easyShopperApiRequest.call(this, 'DELETE', '/mobile-backend/api/v5/shoppinglist/clear');
+						// Get credentials for storeGuid
+						const credentials = await this.getCredentials('easyShopperApi');
+						const storeGuid = credentials.storeGuid as string;
+
+						const responseData = await easyShopperApiRequest.call(this, 'DELETE', `/mobile-backend/api/v5/shoppingList/${storeGuid}`);
 						returnData.push({
 							json: {
 								success: true,

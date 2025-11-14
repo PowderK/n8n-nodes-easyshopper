@@ -30,6 +30,14 @@ export class EasyShopperApi implements ICredentialType {
 			required: true,
 		},
 		{
+			displayName: 'Store GUID',
+			name: 'storeGuid',
+			type: 'string',
+			default: '',
+			description: 'Your store GUID (available after login)',
+			required: true,
+		},
+		{
 			displayName: 'Base URL',
 			name: 'baseUrl',
 			type: 'string',
