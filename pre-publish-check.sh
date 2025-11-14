@@ -12,9 +12,9 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Sensible Daten die NICHT veröffentlicht werden dürfen
+# Note: Client-ID (f1f98e3c-b86d-47f7-ada5-83dd0250c2b6) ist app-weit und kann veröffentlicht werden
 SENSITIVE_PATTERNS=(
     "d7b5ef17-d378-4ea0-b541-3a41255baa2a"
-    "f1f98e3c-b86d-47f7-ada5-83dd0250c2b6"
     "ZjFmOThlM2MtYjg2ZC00N2Y3LWFkYTUtODNkZDAyNTBjMmI2"
     "682ef075-b1c1-472a-9924-d25748d95ee7"
     "eyJhbGciOiJIUzI1NiIsInR5cCI6Ik"
