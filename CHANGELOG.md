@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.10] - 2025-11-15
+
+### Fixed
+- Scan Barcode Operation in Source Code hinzugefügt (war nur in kompilierter Version vorhanden)
+- Notes-Feld für Add Item Operation in Source Code hinzugefügt
+
 ## [0.1.9] - 2025-11-15
 
 ### Added
