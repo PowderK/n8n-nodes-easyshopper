@@ -5,6 +5,8 @@ Eine n8n Community Node für die Integration mit der EasyShopper API zum Verwalt
 ## Features
 
 - ✅ **Produkte hinzufügen** - Füge Artikel zu deiner EasyShopper Einkaufsliste hinzu
+- 📝 **Notizen hinzufügen** - Füge optionale Notizen/Beschreibungen zu Produkten hinzu
+- 📷 **Barcode scannen** - Scanne GTIN/EAN Barcodes und füge Produkte direkt hinzu
 - 📋 **Liste abrufen** - Hole alle Artikel aus deiner Einkaufsliste
 - 🗑️ **Artikel entfernen** - Entferne spezifische Artikel von der Liste
 - 🧹 **Liste leeren** - Lösche alle Artikel auf einmal
@@ -67,7 +69,21 @@ Operation: Add Item
 Product Name: "Milch"
 Quantity: 2
 Category: Auto (AI Detection)
+Note: "Fettarm" (optional)
 ```
+
+#### Barcode scannen
+```
+Resource: Shopping List
+Operation: Scan Barcode
+Barcode (GTIN/EAN): "4023300901002"
+```
+Das Produkt wird automatisch erkannt und zur Liste hinzugefügt. Die API liefert alle Produktdetails inklusive:
+- Produktname und Marke
+- Kategorie (automatisch zugewiesen)
+- Preis
+- Produktbild (falls verfügbar)
+- Regalposition im Laden
 
 #### Einkaufsliste abrufen
 ```
@@ -84,7 +100,16 @@ Item GUID: "cc456584-c144-44f7-afb7-aca9fdb15b09"
 
 ### Workflow-Beispiele
 
-#### 1. Wöchentliche Einkaufsliste
+#### 1. Barcode-Scanner zu Einkaufsliste
+```
+Webhook (Barcode aus Scanner-App)
+↓
+EasyShopper: Scan Barcode
+↓
+Notification: "Produkt hinzugefügt"
+```
+
+#### 2. Wöchentliche Einkaufsliste
 ```
 Schedule Trigger (weekly)
 ↓
@@ -95,7 +120,7 @@ Set Node (Grundeinkäufe)
 EasyShopper: Add Item (Loop)
 ```
 
-#### 2. E-Mail zu Einkaufsliste
+#### 3. E-Mail zu Einkaufsliste
 ```
 Email Trigger
 ↓
@@ -106,7 +131,7 @@ Split In Batches
 EasyShopper: Add Item
 ```
 
-#### 3. Slack Integration
+#### 4. Slack Integration
 ```
 Slack Trigger (/einkauf Brot)
 ↓
@@ -117,18 +142,34 @@ Slack: Send Confirmation
 
 ## Verfügbare Kategorien
 
-- **Auto (AI Detection)** - Automatische Kategorien-Erkennung
-- **Obst & Gemüse** - `obst_gemuese`
-- **Fleisch & Wurst** - `fleisch_wurst`
-- **Fisch & Meeresfrüchte** - `fisch_meeresfruechte`
-- **Molkereiprodukte** - `molkereiprodukte`
-- **Brot & Backwaren** - `brot_backwaren`
-- **Getränke** - `getraenke`
-- **Süßwaren** - `suessigkeiten_snacks`
-- **Tiefkühlprodukte** - `tiefkuehlprodukte`
-- **Konserven** - `konserven_fertiggerichte`
-- **Grundnahrungsmittel** - `grundnahrungsmittel`
+- **Auto (AI Detection)** - Automatische Kategorien-Erkennung durch die App
+- **Babykost** - `babykost`
+- **Brot & Kuchen** - `brot_kuchen`
+- **Brotaufstrich** - `brotaufstrich`
 - **Diverse Non-Food** - `diverse_nonfood`
+- **Feinkost** - `feinkost`
+- **Fette & Eier** - `fette_eier`
+- **Fisch** - `fisch`
+- **Freizeit** - `freizeit`
+- **Garten** - `garten`
+- **Gebäck** - `gebaeck`
+- **Genussmittel** - `genussmittel`
+- **Getränke** - `getraenke`
+- **Haushalt** - `haushalt`
+- **Hygiene** - `hygiene`
+- **Käse** - `kaese`
+- **Kaffee, Tee & Kakao** - `kaffee_tee_kakao`
+- **Knabbereien** - `knabbereien`
+- **Konserven** - `konserven`
+- **Molkereiprodukte** - `molkereiprodukte`
+- **Nahrungsmittel** - `nahrungsmittel`
+- **Obst & Gemüse** - `obst_und_gemuese`
+- **Reinigungsmittel** - `reinigungsmittel`
+- **Süßwaren** - `suesswaren`
+- **Tiefkühlkost** - `tiefkuehlkost`
+- **Tierbedarf** - `tierbedarf`
+- **Würzmittel** - `wuerzmittel`
+- **Wurst & Fleisch** - `wurst_fleisch`
 
 ## Output-Format
 
@@ -139,7 +180,46 @@ Slack: Send Confirmation
   "productName": "Milch",
   "quantity": 1,
   "category": "molkereiprodukte",
+  "note": "Fettarm",
   "itemGuid": "cc456584-c144-44f7-afb7-aca9fdb15b09",
+  "response": { /* Vollständige API-Response */ }
+}
+```
+
+### Scan Barcode Response
+```json
+{
+  "success": true,
+  "barcodeType": "product",
+  "barcode": "4023300901002",
+  "storeGuid": "682ef075-b1c1-472a-9924-d25748d95ee7",
+  "product": {
+    "shoppingListItemGuid": "0a0dd671-55e0-4a58-b9e6-2cb2526a38c1",
+    "itemId": "1419949009-ST",
+    "gtin": "4023300901002",
+    "brand": "Langnese Flotte Biene",
+    "name": "Obstblütenhonig 250g",
+    "amount": 1,
+    "cgIcon": "konfituere_honig",
+    "cgLocalKey": "brotaufstrich",
+    "product": {
+      "positions": [
+        {
+          "shelf": 1204,
+          "x": 38.71525,
+          "y": -2.9666875
+        }
+      ],
+      "weight": 284,
+      "hasImage": true,
+      "labels": ["Aufstrich", "Brotaufstrich", "Feinkost", "Honig"]
+    },
+    "priceDetails": {
+      "price": 349,
+      "original": 349
+    }
+  },
+  "itemGuid": "0a0dd671-55e0-4a58-b9e6-2cb2526a38c1",
   "response": { /* Vollständige API-Response */ }
 }
 ```

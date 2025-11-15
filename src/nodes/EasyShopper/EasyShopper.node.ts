@@ -145,17 +145,33 @@ export class EasyShopper implements INodeType {
 				},
 				options: [
 					{ name: 'Auto (AI Detection)', value: 'auto' },
-					{ name: 'Obst & Gemüse', value: 'obst_gemuese' },
-					{ name: 'Fleisch & Wurst', value: 'fleisch_wurst' },
-					{ name: 'Fisch & Meeresfrüchte', value: 'fisch_meeresfruechte' },
-					{ name: 'Molkereiprodukte', value: 'molkereiprodukte' },
-					{ name: 'Brot & Backwaren', value: 'brot_backwaren' },
-					{ name: 'Getränke', value: 'getraenke' },
-					{ name: 'Süßwaren', value: 'suessigkeiten_snacks' },
-					{ name: 'Tiefkühlprodukte', value: 'tiefkuehlprodukte' },
-					{ name: 'Konserven', value: 'konserven_fertiggerichte' },
-					{ name: 'Grundnahrungsmittel', value: 'grundnahrungsmittel' },
+					{ name: 'Babykost', value: 'babykost' },
+					{ name: 'Brot & Kuchen', value: 'brot_kuchen' },
+					{ name: 'Brotaufstrich', value: 'brotaufstrich' },
 					{ name: 'Diverse Non-Food', value: 'diverse_nonfood' },
+					{ name: 'Feinkost', value: 'feinkost' },
+					{ name: 'Fette & Eier', value: 'fette_eier' },
+					{ name: 'Fisch', value: 'fisch' },
+					{ name: 'Freizeit', value: 'freizeit' },
+					{ name: 'Garten', value: 'garten' },
+					{ name: 'Gebäck', value: 'gebaeck' },
+					{ name: 'Genussmittel', value: 'genussmittel' },
+					{ name: 'Getränke', value: 'getraenke' },
+					{ name: 'Haushalt', value: 'haushalt' },
+					{ name: 'Hygiene', value: 'hygiene' },
+					{ name: 'Käse', value: 'kaese' },
+					{ name: 'Kaffee, Tee & Kakao', value: 'kaffee_tee_kakao' },
+					{ name: 'Knabbereien', value: 'knabbereien' },
+					{ name: 'Konserven', value: 'konserven' },
+					{ name: 'Molkereiprodukte', value: 'molkereiprodukte' },
+					{ name: 'Nahrungsmittel', value: 'nahrungsmittel' },
+					{ name: 'Obst & Gemüse', value: 'obst_und_gemuese' },
+					{ name: 'Reinigungsmittel', value: 'reinigungsmittel' },
+					{ name: 'Süßwaren', value: 'suesswaren' },
+					{ name: 'Tiefkühlkost', value: 'tiefkuehlkost' },
+					{ name: 'Tierbedarf', value: 'tierbedarf' },
+					{ name: 'Würzmittel', value: 'wuerzmittel' },
+					{ name: 'Wurst & Fleisch', value: 'wurst_fleisch' },
 				],
 				default: 'auto',
 				description: 'Product category (auto-detection uses AI)',
@@ -333,33 +349,133 @@ export class EasyShopper implements INodeType {
 		const name = productName.toLowerCase();
 
 		// Obst & Gemüse
-		if (/\b(apfel|banane|orange|tomate|gurke|karotte|salat|zwiebel|kartoffel|obst|gemüse)\b/.test(name)) {
-			return 'obst_gemuese';
+		if (/\b(apfel|banane|orange|tomate|gurke|karotte|salat|zwiebel|kartoffel|obst|gemüse|erdbeere|kirsche|birne|pflaume)\b/.test(name)) {
+			return 'obst_und_gemuese';
 		}
 
-		// Fleisch & Wurst
-		if (/\b(fleisch|wurst|schinken|salami|hähnchen|schwein|rind|hackfleisch)\b/.test(name)) {
-			return 'fleisch_wurst';
+		// Wurst & Fleisch
+		if (/\b(fleisch|wurst|schinken|salami|hähnchen|schwein|rind|hackfleisch|geflügel|steak|bratwurst)\b/.test(name)) {
+			return 'wurst_fleisch';
+		}
+
+		// Fisch
+		if (/\b(fisch|lachs|thunfisch|forelle|hering|garnele|muschel|meeresfrüchte|kabeljau)\b/.test(name)) {
+			return 'fisch';
+		}
+
+		// Käse
+		if (/\b(käse|emmentaler|gouda|cheddar|mozzarella|parmesan|frischkäse)\b/.test(name)) {
+			return 'kaese';
 		}
 
 		// Molkereiprodukte
-		if (/\b(milch|käse|joghurt|butter|quark|sahne|frischkäse)\b/.test(name)) {
+		if (/\b(milch|joghurt|butter|quark|sahne|creme|fraiche)\b/.test(name)) {
 			return 'molkereiprodukte';
 		}
 
-		// Brot & Backwaren
-		if (/\b(brot|brötchen|kuchen|keks|gebäck|toast)\b/.test(name)) {
-			return 'brot_backwaren';
+		// Fette & Eier
+		if (/\b(ei|eier|öl|olivenöl|sonnenblumenöl|margarine|fett)\b/.test(name)) {
+			return 'fette_eier';
+		}
+
+		// Brot & Kuchen
+		if (/\b(brot|brötchen|kuchen|gebäck|toast|baguette|ciabatta|croissant)\b/.test(name)) {
+			return 'brot_kuchen';
+		}
+
+		// Gebäck
+		if (/\b(keks|cookie|muffin|donut|berliner|teilchen)\b/.test(name)) {
+			return 'gebaeck';
+		}
+
+		// Brotaufstrich
+		if (/\b(marmelade|nutella|honig|aufstrich|konfitüre|gelee)\b/.test(name)) {
+			return 'brotaufstrich';
 		}
 
 		// Getränke
-		if (/\b(wasser|saft|bier|wein|cola|limonade|tee|kaffee|getränk)\b/.test(name)) {
+		if (/\b(wasser|saft|cola|limonade|getränk|mineralwasser|sprudel)\b/.test(name)) {
 			return 'getraenke';
 		}
 
+		// Kaffee, Tee & Kakao
+		if (/\b(kaffee|tee|kakao|espresso|cappuccino|latte|chai)\b/.test(name)) {
+			return 'kaffee_tee_kakao';
+		}
+
+		// Genussmittel (Alkohol, Tabak)
+		if (/\b(bier|wein|schnaps|wodka|rum|whisky|zigarette|tabak|sekt|champagner)\b/.test(name)) {
+			return 'genussmittel';
+		}
+
 		// Süßwaren
-		if (/\b(schokolade|bonbon|gummi|eis|süß|zucker|honig)\b/.test(name)) {
-			return 'suessigkeiten_snacks';
+		if (/\b(schokolade|bonbon|gummi|süß|süßigkeit|praline|riegel)\b/.test(name)) {
+			return 'suesswaren';
+		}
+
+		// Knabbereien
+		if (/\b(chips|cracker|salzstange|erdnuss|nuss|knabber|popcorn)\b/.test(name)) {
+			return 'knabbereien';
+		}
+
+		// Tiefkühlkost
+		if (/\b(tiefkühl|gefror|eis|eiscreme|tk|pizza)\b/.test(name)) {
+			return 'tiefkuehlkost';
+		}
+
+		// Konserven
+		if (/\b(dose|konserve|eingekocht|eingemacht|bohnen|erbsen|mais)\b/.test(name)) {
+			return 'konserven';
+		}
+
+		// Nahrungsmittel (Nudeln, Reis, Mehl)
+		if (/\b(nudel|pasta|reis|mehl|müsli|cornflakes|haferflocken|grieß)\b/.test(name)) {
+			return 'nahrungsmittel';
+		}
+
+		// Würzmittel
+		if (/\b(salz|pfeffer|gewürz|ketchup|senf|mayo|mayonnaise|essig|soße|sauce)\b/.test(name)) {
+			return 'wuerzmittel';
+		}
+
+		// Feinkost
+		if (/\b(oliven|antipasti|pesto|delikatesse|feinkost|caviar)\b/.test(name)) {
+			return 'feinkost';
+		}
+
+		// Babykost
+		if (/\b(baby|säugling|milchpulver|brei|gläschen|windel|schnuller)\b/.test(name)) {
+			return 'babykost';
+		}
+
+		// Tierbedarf
+		if (/\b(hund|katze|tier|futter|katzenstreu|leckerli|spielzeug)\b/.test(name)) {
+			return 'tierbedarf';
+		}
+
+		// Hygiene
+		if (/\b(shampoo|seife|duschgel|zahnpasta|deo|deodorant|hygiene|rasier|creme)\b/.test(name)) {
+			return 'hygiene';
+		}
+
+		// Reinigungsmittel
+		if (/\b(putzen|reinig|spülmittel|waschmittel|weichspüler|schwamm|lappen)\b/.test(name)) {
+			return 'reinigungsmittel';
+		}
+
+		// Haushalt
+		if (/\b(papier|toilettenpapier|küchenpapier|serviette|tüte|müllbeutel|alufolie|frischhaltefolie)\b/.test(name)) {
+			return 'haushalt';
+		}
+
+		// Garten
+		if (/\b(garten|blume|pflanze|erde|dünger|samen|saat|topf)\b/.test(name)) {
+			return 'garten';
+		}
+
+		// Freizeit
+		if (/\b(spiel|spielzeug|buch|zeitschrift|hobby|basteln)\b/.test(name)) {
+			return 'freizeit';
 		}
 
 		// Default

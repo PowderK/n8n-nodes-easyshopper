@@ -64,6 +64,12 @@ export class EasyShopper implements INodeType {
 						action: 'Add an item to shopping list',
 					},
 					{
+						name: 'Scan Barcode',
+						value: 'scanBarcode',
+						description: 'Add product by scanning barcode (GTIN/EAN)',
+						action: 'Scan barcode and add to shopping list',
+					},
+					{
 						name: 'Get Items',
 						value: 'getItems',
 						description: 'Get all items from the shopping list',
@@ -106,6 +112,21 @@ export class EasyShopper implements INodeType {
 			},
 			// Shopping List Parameters
 			{
+				displayName: 'Barcode (GTIN/EAN)',
+				name: 'barcode',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['shoppingList'],
+						operation: ['scanBarcode'],
+					},
+				},
+				default: '',
+				placeholder: '4023300901002',
+				description: 'GTIN/EAN barcode number of the product',
+				required: true,
+			},
+			{
 				displayName: 'Product Name',
 				name: 'productName',
 				type: 'string',
@@ -132,6 +153,20 @@ export class EasyShopper implements INodeType {
 				},
 				default: 1,
 				description: 'Quantity of the product',
+			},
+			{
+				displayName: 'Note',
+				name: 'note',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['shoppingList'],
+						operation: ['addItem'],
+					},
+				},
+				default: '',
+				placeholder: 'Optional note/description',
+				description: 'Optional note or description for the product',
 			},
 			{
 				displayName: 'Category',
@@ -187,31 +222,76 @@ export class EasyShopper implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				if (resource === 'shoppingList') {
-					if (operation === 'addItem') {
-						const productName = this.getNodeParameter('productName', i) as string;
-						const quantity = this.getNodeParameter('quantity', i) as number;
-						const category = this.getNodeParameter('category', i) as string;
+				if (operation === 'addItem') {
+					const productName = this.getNodeParameter('productName', i) as string;
+					const quantity = this.getNodeParameter('quantity', i) as number;
+					const category = this.getNodeParameter('category', i) as string;
+					const note = this.getNodeParameter('note', i) as string;
 
-						// Auto-detect category if needed
-						let finalCategory = category;
-						if (category === 'auto') {
-							finalCategory = EasyShopper.detectCategory(productName);
-						}
+					// Auto-detect category if needed
+					let finalCategory = category;
+					if (category === 'auto') {
+						finalCategory = EasyShopper.detectCategory(productName);
+					}
 
-						const body = {
-							productName,
-							quantity,
-							category: finalCategory,
-						};
+					const body: any = {
+						productName,
+						quantity,
+						category: finalCategory,
+					};
 
-						const responseData = await easyShopperApiRequest.call(this, 'POST', '/mobile-backend/api/v5/shoppinglist/addItem', body);
+					// Add note if provided
+					if (note) {
+						body.notes = [{
+							type: 'text',
+							text: note,
+						}];
+					}
+
+					const responseData = await easyShopperApiRequest.call(this, 'POST', '/mobile-backend/api/v5/shoppinglist/addItem', body);
 						returnData.push({
 							json: {
 								success: true,
 								productName,
 								quantity,
 								category: finalCategory,
+								note: note || undefined,
 								itemGuid: responseData.itemGuid,
+								response: responseData,
+							},
+						});
+
+					} else if (operation === 'scanBarcode') {
+						const barcode = this.getNodeParameter('barcode', i) as string;
+						const credentials = await this.getCredentials('easyShopperApi');
+						
+						// Get store GUID first (from login or cached credentials)
+						let storeGuid = '';
+						try {
+							const loginBody = {
+								uniqueDeviceId: credentials.deviceId,
+							};
+							const loginResponse = await easyShopperApiRequest.call(this, 'POST', '/mobile-backend/api/v4/login', loginBody);
+							storeGuid = loginResponse.storeGuid;
+						} catch (error) {
+							throw new NodeOperationError(this.getNode(), 'Failed to get store GUID for barcode scan');
+						}
+
+						// Scan barcode and get product
+						const responseData = await easyShopperApiRequest.call(
+							this,
+							'GET',
+							`/mobile-backend/api/v5/scan/shoppingList/${storeGuid}/${barcode}`
+						);
+
+						returnData.push({
+							json: {
+								success: true,
+								barcodeType: responseData.barcodeType,
+								barcode,
+								storeGuid,
+								product: responseData.data,
+								itemGuid: responseData.data?.shoppingListItemGuid,
 								response: responseData,
 							},
 						});
