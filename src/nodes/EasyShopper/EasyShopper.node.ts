@@ -64,6 +64,12 @@ export class EasyShopper implements INodeType {
 						action: 'Add an item to shopping list',
 					},
 					{
+						name: 'Scan Barcode',
+						value: 'scanBarcode',
+						description: 'Add product by scanning barcode (GTIN/EAN)',
+						action: 'Scan barcode and add to shopping list',
+					},
+					{
 						name: 'Get Items',
 						value: 'getItems',
 						description: 'Get all items from the shopping list',
@@ -106,6 +112,21 @@ export class EasyShopper implements INodeType {
 			},
 			// Shopping List Parameters
 			{
+				displayName: 'Barcode (GTIN/EAN)',
+				name: 'barcode',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['shoppingList'],
+						operation: ['scanBarcode'],
+					},
+				},
+				default: '',
+				placeholder: '4023300901002',
+				description: 'GTIN/EAN barcode number of the product',
+				required: true,
+			},
+			{
 				displayName: 'Product Name',
 				name: 'productName',
 				type: 'string',
@@ -132,6 +153,20 @@ export class EasyShopper implements INodeType {
 				},
 				default: 1,
 				description: 'Quantity of the product',
+			},
+			{
+				displayName: 'Note',
+				name: 'note',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['shoppingList'],
+						operation: ['addItem'],
+					},
+				},
+				default: '',
+				placeholder: 'Optional note/description',
+				description: 'Optional note or description for the product',
 			},
 			{
 				displayName: 'Category',
@@ -203,57 +238,86 @@ export class EasyShopper implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				if (resource === 'shoppingList') {
-					if (operation === 'addItem') {
-						const productName = this.getNodeParameter('productName', i) as string;
-						const quantity = this.getNodeParameter('quantity', i) as number;
-						const category = this.getNodeParameter('category', i) as string;
+				if (operation === 'addItem') {
+					const productName = this.getNodeParameter('productName', i) as string;
+					const quantity = this.getNodeParameter('quantity', i) as number;
+					const category = this.getNodeParameter('category', i) as string;
+					const note = this.getNodeParameter('note', i) as string;
 
-						// Auto-detect category if needed
-						let finalCategory = category;
-						if (category === 'auto') {
-							finalCategory = EasyShopper.detectCategory(productName);
-						}
+					// Auto-detect category if needed
+					let finalCategory = category;
+					if (category === 'auto') {
+						finalCategory = EasyShopper.detectCategory(productName);
+					}
 
-						// Get Store GUID from login
-						const storeGuid = await getStoreGuid.call(this);
+					// Get Store GUID from login
+					const storeGuid = await getStoreGuid.call(this);
 
-						const body = {
-							amount: quantity,
+					const body: any = {
+						amount: quantity,
+						cgIcon: finalCategory,
+						cgLocalKey: finalCategory,
+						product: {
 							cgIcon: finalCategory,
 							cgLocalKey: finalCategory,
-							product: {
-								cgIcon: finalCategory,
-								cgLocalKey: finalCategory,
-								name: productName,
-							},
-							tag: productName,
-							groupName: finalCategory,
-						};
+							name: productName,
+						},
+						tag: productName,
+						groupName: finalCategory,
+					};
 
-						const responseData = await easyShopperApiRequest.call(this, 'POST', `/mobile-backend/api/v5/shoppingList/addOrUpdate/${storeGuid}`, body);
-						returnData.push({
-							json: {
-								success: true,
-								productName,
-								quantity,
-								category: finalCategory,
-								itemGuid: responseData.itemGuid,
-								response: responseData,
-							},
-						});
+					// Add note if provided
+					if (note) {
+						body.notes = [{
+							type: 'text',
+							text: note,
+						}];
+					}					const responseData = await easyShopperApiRequest.call(this, 'POST', `/mobile-backend/api/v5/shoppingList/addOrUpdate/${storeGuid}`, body);
+					returnData.push({
+						json: {
+							success: true,
+							productName,
+							quantity,
+							category: finalCategory,
+							note: note || undefined,
+							itemGuid: responseData.itemGuid,
+							response: responseData,
+						},
+					});			} else if (operation === 'scanBarcode') {
+					const barcode = this.getNodeParameter('barcode', i) as string;
+					
+					// Get store GUID from login
+					const storeGuid = await getStoreGuid.call(this);
 
-				} else if (operation === 'getItems') {
-					const responseData = await easyShopperApiRequest.call(this, 'GET', '/mobile-backend/api/v5/shoppingList/get/');
-						returnData.push({
-							json: {
-								success: true,
-								itemsCount: responseData.items ? responseData.items.length : 0,
-								items: responseData.items || [],
-								response: responseData,
-							},
-						});
+					// Scan barcode and get product
+					const responseData = await easyShopperApiRequest.call(
+						this,
+						'GET',
+						`/mobile-backend/api/v5/scan/shoppingList/${storeGuid}/${barcode}`
+					);
 
-					} else if (operation === 'removeItem') {
+					returnData.push({
+						json: {
+							success: true,
+							barcodeType: responseData.barcodeType,
+							barcode,
+							storeGuid,
+							product: responseData.data,
+							itemGuid: responseData.data?.shoppingListItemGuid,
+							response: responseData,
+						},
+					});
+
+			} else if (operation === 'getItems') {
+				const responseData = await easyShopperApiRequest.call(this, 'GET', '/mobile-backend/api/v5/shoppingList/get/');
+					returnData.push({
+						json: {
+							success: true,
+							itemsCount: responseData.items ? responseData.items.length : 0,
+							items: responseData.items || [],
+							response: responseData,
+						},
+					});					} else if (operation === 'removeItem') {
 						const itemGuid = this.getNodeParameter('itemGuid', i) as string;
 						// Get Store GUID from login
 						const storeGuid = await getStoreGuid.call(this);
