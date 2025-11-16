@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.13] - 2025-11-16
+
+### Fixed
+- **KRITISCHER FIX**: Notes-Feld verursacht keinen MongoDB Duplicate Key Error mehr
+  - Notizen werden nur gesendet wenn tatsächlich Text vorhanden ist (`.length > 0`)
+  - Leerstrings werden automatisch zu leeren Strings konvertiert und gefiltert
+  - note wird einmalig mit `.trim()` bereinigt und dann verwendet
+  - Verhindert `notes.value: null` Fehler bei leeren Notizen komplett
+
 ## [0.1.12] - 2025-11-16
 
 ### Added

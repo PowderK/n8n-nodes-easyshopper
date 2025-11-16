@@ -238,13 +238,13 @@ export class EasyShopper implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				if (resource === 'shoppingList') {
-				if (operation === 'addItem') {
-					const productName = this.getNodeParameter('productName', i) as string;
-					const quantity = this.getNodeParameter('quantity', i) as number;
-					const category = this.getNodeParameter('category', i) as string;
-					const note = this.getNodeParameter('note', i) as string;
-
-					// Auto-detect category if needed
+			if (operation === 'addItem') {
+				const productName = this.getNodeParameter('productName', i) as string;
+				const quantity = this.getNodeParameter('quantity', i) as number;
+				const category = this.getNodeParameter('category', i) as string;
+				const noteRaw = this.getNodeParameter('note', i, '') as string;
+				
+				const note = noteRaw ? noteRaw.trim() : '';
 					let finalCategory = category;
 					if (category === 'auto') {
 						finalCategory = EasyShopper.detectCategory(productName);
@@ -267,10 +267,10 @@ export class EasyShopper implements INodeType {
 					};
 
 					// Add note if provided (and not empty)
-					if (note && note.trim() !== '') {
+					if (note.length > 0) {
 						body.notes = [{
 							type: 'text',
-							text: note.trim(),
+							text: note,
 						}];
 					}					const responseData = await easyShopperApiRequest.call(this, 'POST', `/mobile-backend/api/v5/shoppingList/addOrUpdate/${storeGuid}`, body);
 					returnData.push({

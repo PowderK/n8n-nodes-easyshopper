@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-easyshopper",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "n8n Community Node für EasyShopper Einkaufslisten-Verwaltung",
   "keywords": [
     "n8n-community-node-package",
