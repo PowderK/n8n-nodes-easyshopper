@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.12] - 2025-11-16
+
+### Added
+- **WORKFLOWS.md**: Komplette n8n Workflow-Beispiele mit JSON-Code
+  - Barcode-Scanner Workflow mit Webhook-Integration
+  - Manuelles Einfügen mit intelligenter Duplikaterkennung
+  - Universal-Workflow (Barcode + Manuell kombiniert)
+  - Alle Workflows erhöhen automatisch die Anzahl bei Duplikaten
+  - Fertige cURL-Tests und iOS Shortcut Beispiele
+  - Tipps für Fuzzy Matching und Error Handling
+
+### Changed
+- Dokumentationsdateien werden jetzt mit veröffentlicht (WORKFLOWS.md, BARCODE_SCAN.md, API_CATEGORIES.md)
+
+## [0.1.11] - 2025-11-15
+
+### Fixed
+- Notes-Feld wirft keinen Duplicate Key Error mehr bei leeren Notizen
+- Notes werden nur noch gesendet, wenn tatsächlich Text eingegeben wurde
+- Leerzeichen werden automatisch entfernt (trim)
+
 ## [0.1.10] - 2025-11-15
 
 ### Fixed

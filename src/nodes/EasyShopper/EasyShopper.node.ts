@@ -266,11 +266,11 @@ export class EasyShopper implements INodeType {
 						groupName: finalCategory,
 					};
 
-					// Add note if provided
-					if (note) {
+					// Add note if provided (and not empty)
+					if (note && note.trim() !== '') {
 						body.notes = [{
 							type: 'text',
-							text: note,
+							text: note.trim(),
 						}];
 					}					const responseData = await easyShopperApiRequest.call(this, 'POST', `/mobile-backend/api/v5/shoppingList/addOrUpdate/${storeGuid}`, body);
 					returnData.push({
