@@ -1,10 +1,11 @@
 {
   "domain": "easyshopper",
   "name": "EASY Shopper",
-  "documentation": "https://github.com/benni/easyshopper",
+  "documentation": "https://github.com/PowderK/easyshopper-ha",
   "requirements": ["qrcode==8.2"],
   "codeowners": [],
   "version": "0.1.0",
   "iot_class": "cloud_polling",
   "config_flow": true
 }
+
