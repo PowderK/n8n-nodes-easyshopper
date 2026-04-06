@@ -1,0 +1,10 @@
+{
+  "domain": "easyshopper",
+  "name": "EASY Shopper",
+  "documentation": "https://github.com/benni/easyshopper",
+  "requirements": ["qrcode==8.2"],
+  "codeowners": [],
+  "version": "0.1.0",
+  "iot_class": "cloud_polling",
+  "config_flow": true
+}

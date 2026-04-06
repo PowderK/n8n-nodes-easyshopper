@@ -1,0 +1,33 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "EASY Shopper Setup",
+        "description": "Willkommen bei EASY Shopper! Bitte nimm dir einen Moment Zeit, um die rechtlichen Hinweise zu lesen:\n\n* [AGB lesen]({url_agb})\n* [Datenschutz lesen]({url_privacy})\n\nGib danach deine Postleitzahl ein, um nach dem nächsten Markt zu suchen.",
+        "data": {
+          "plz": "Postleitzahl",
+          "tos_accepted": "Ich habe die AGB und den Datenschutz gelesen und akzeptiere diese."
+        }
+      },
+      "select_store": {
+        "title": "Markt auswählen",
+        "description": "Bitte wähle deinen Edeka Markt aus der Liste aus.",
+        "data": {
+          "store_guid": "Verfügbare Märkte"
+        }
+      }
+    },
+    "error": {
+      "tos_not_accepted": "Du musst die AGB und den Datenschutz akzeptieren.",
+      "plz_not_found": "Für diese PLZ konnten keine Koordinaten gefunden werden.",
+      "no_stores_found": "In deiner Nähe wurden leider keine EASY Shopper Märkte gefunden.",
+      "geocoding_error": "Fehler beim Abruf der Koordinaten.",
+      "signup_failed": "Der Bot-Account konnte nicht erstellt werden.",
+      "login_failed": "Anmeldung beim Dienst fehlgeschlagen."
+    },
+    "abort": {
+      "signup_failed": "Kontoerstellung fehlgeschlagen.",
+      "login_failed": "Login fehlgeschlagen."
+    }
+  }
+}
